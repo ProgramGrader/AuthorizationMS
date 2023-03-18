@@ -1,0 +1,53 @@
+name: Deploy to ECR
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [main]
+
+jobs:
+
+  build:
+
+    name: Build Image
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        images: [AuthorizerCerbos]
+    # ECR_REPOSITORY: ACTUAL NAME OF THE ECR
+    steps:
+      ## -print0 option is used to separate the file names with null characters instead of newlines
+      - name: Build Image
+        run: |
+          make image
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - id: lowercase-image-name
+        uses: ASzc/change-string-case-action@v5
+        with:
+          string: ${{matrix.images}}
+
+      - name: Create ECR if does not exist
+        id: create-ecr
+        uses: int128/create-ecr-repository-action@v1
+        with:
+          repository: ${{steps.lowercase-image-name.outputs.lowercase}}
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{steps.lowercase-image-name.outputs.lowercase}}
+          IMAGE_TAG: latest
+        run: |
+          docker build -f src/main/docker/Dockerfile.native -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
