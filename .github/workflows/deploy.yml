@@ -15,14 +15,14 @@ jobs:
     strategy:
       matrix:
         images: [AuthorizerCerbos]
-    # ECR_REPOSITORY: ACTUAL NAME OF THE ECR
     steps:
       ## -print0 option is used to separate the file names with null characters instead of newlines
       - name: Checkout Repo
         uses: actions/checkout@v2
       - name: Build Image
         run: |
-          chmod +x Makefile
+          ls  
+          chmod +x ./Makefile
           make image
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
