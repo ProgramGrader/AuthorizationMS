@@ -18,13 +18,13 @@ cerbos-binary:
 	  	echo $$(curl -sH "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/cerbos/cerbos/tags?per_page=1" | jq -r '.[].name | ltrimstr("v")');\
 		CURRENT_RELEASE=$$(curl -sH "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/cerbos/cerbos/tags?per_page=1" | jq -r '.[].name | ltrimstr("v")'); \
 	fi; \
-	ver='[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+'; \
-	if [[ $$CURRENT_RELEASE =~ $$ver  ]]; then \
-		CURRENT_RELEASE="$${BASH_REMATCH[0]}"; \
-	else \
-		echo "Unexpected format of CERBOS_RELEASE ($$CURRENT_RELEASE), expected semantic version 'x.x.x'" >&2; \
-		exit 1; \
-	fi; \
+	#ver='[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+'; \
+#	if [[ $$CURRENT_RELEASE =~ $$ver  ]]; then \
+#		CURRENT_RELEASE="$${BASH_REMATCH[0]}"; \
+#	else \
+#		echo "Unexpected format of CERBOS_RELEASE ($$CURRENT_RELEASE), expected semantic version 'x.x.x'" >&2; \
+#		exit 1; \
+#	fi; \
 	CERBOS_VER=$CURRENT_RELEASE
 	arch=$$(uname -m); [ "$$arch" != "x86_64" ] && [ "$$arch" != "arm64" ] && { echo "$${arch} - unsupported architecture, supported: x86_64, arm64" >&2; exit 1; }; \
 	oses=(Linux); \
