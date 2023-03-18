@@ -20,6 +20,7 @@ jobs:
       ## -print0 option is used to separate the file names with null characters instead of newlines
       - name: Build Image
         run: |
+          ls
           chmod -R 777 Makefile
           make image
       - name: Configure AWS credentials
