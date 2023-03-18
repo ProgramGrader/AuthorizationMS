@@ -13,8 +13,9 @@ clean:
 .PHONY: cerbos-binary
 cerbos-binary:
 	@ if [[ "$$CERBOS_RELEASE" ]]; then \
-		CURRENT_RELEASE=$$CERBOS_RELEASE; \
+		CURRENT_RELEASE=$CERBOS_RELEASE; \
 	else \
+	  	echo $$(curl -sH "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/cerbos/cerbos/tags?per_page=1" | jq -r '.[].name | ltrimstr("v")')
 		CURRENT_RELEASE=$$(curl -sH "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/cerbos/cerbos/tags?per_page=1" | jq -r '.[].name | ltrimstr("v")'); \
 	fi; \
 	ver='[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+'; \
