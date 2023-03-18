@@ -40,6 +40,7 @@ cerbos-binary:
 		mkdir -p ./.cerbos/$${p}; \
 		if [[ ! -e "./.cerbos/$${p}/cerbos" ]]; then \
 		  echo "Downloading Cerbos binary for $${os}"; \
+		  echo "Using 2 Cerbos $$CURRENT_RELEASE"
 		  echo "https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${arch}.tar.gz"; \
 		  curl -sL "https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${arch}.tar.gz" | tar -xz -C ./.cerbos/$${p}/ cerbos; \
 		fi; \
