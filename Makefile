@@ -39,7 +39,7 @@ cerbos-binary:
 		mkdir -p ./.cerbos/$${p}; \
 		if [[ ! -e "./.cerbos/$${p}/cerbos" ]]; then \
 		  echo "Downloading Cerbos binary for $${os}"; \
-		  curl -sL "https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${a}.tar.gz" | tar -xz -C ./.cerbos/$${p}/ cerbos; \
+		  curl -sL "https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${arch}.tar.gz" | tar -xz -C ./.cerbos/$${p}/ cerbos; \
 		fi; \
 	done; \
 
