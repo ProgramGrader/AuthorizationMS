@@ -40,7 +40,7 @@ cerbos-binary:
 		mkdir -p ./.cerbos/$${p}; \
 		if [[ ! -e "./.cerbos/$${p}/cerbos" ]]; then \
 		  CURRENT_RELEASE=$$(curl -sH "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/cerbos/cerbos/tags?per_page=1" | jq -r '.[].name | ltrimstr("v")'); \
-		  echo "CURRENT_RELEASE: ${CURRENT_RELEASE}";\
+		  echo "CURRENT_RELEASE: $${CURRENT_RELEASE}";\
 		  echo "Downloading Cerbos binary for $${os}"; \
 		  echo "curl link: https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${a}.tar.gz"; \
 		  curl -sL "https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${a}.tar.gz" | tar -xz -C ./.cerbos/$${p}/ cerbos; \
