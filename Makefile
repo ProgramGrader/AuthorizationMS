@@ -26,6 +26,7 @@ cerbos-binary:
 		exit 1; \
 	fi; \
 	echo "Using Cerbos $$CURRENT_RELEASE"
+	CERBOS_VER=$CURRENT_RELEASE
 	arch=$$(uname -m); [ "$$arch" != "x86_64" ] && [ "$$arch" != "arm64" ] && { echo "$${arch} - unsupported architecture, supported: x86_64, arm64" >&2; exit 1; }; \
 	oses=(Linux); \
 	if [[ $$(uname -s) = Darwin ]]; then \
@@ -40,9 +41,9 @@ cerbos-binary:
 		mkdir -p ./.cerbos/$${p}; \
 		if [[ ! -e "./.cerbos/$${p}/cerbos" ]]; then \
 		  echo "Downloading Cerbos binary for $${os}"; \
-		  echo "Using 2 Cerbos $$CURRENT_RELEASE";\
-		  echo "https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${arch}.tar.gz"; \
-		  curl -sL "https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${arch}.tar.gz" | tar -xz -C ./.cerbos/$${p}/ cerbos; \
+		  echo "Using 2 Cerbos $$CERBOS_VER";\
+		  echo "https://github.com/cerbos/cerbos/releases/download/v$${CERBOS_VER}/cerbos_$${CERBOS_VER}_$${os}_$${arch}.tar.gz"; \
+		  curl -sL "https://github.com/cerbos/cerbos/releases/download/v$${CERBOS_VER}/cerbos_$${CERBOS_VER}_$${os}_$${arch}.tar.gz" | tar -xz -C ./.cerbos/$${p}/ cerbos; \
 		fi; \
 	done; \
 
