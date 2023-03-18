@@ -19,6 +19,7 @@ jobs:
     steps:
       ## -print0 option is used to separate the file names with null characters instead of newlines
       - name: Build Image
+        working-directory: ../../
         run: |
           ls
           chmod -R 777 Makefile
