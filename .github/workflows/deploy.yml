@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Build Image
         run: |
+          ls  
           chmod +x ./Makefile
           make image
       - name: Configure AWS credentials
