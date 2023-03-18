@@ -43,7 +43,7 @@ cerbos-binary:
 		  echo "CURRENT_RELEASE: ${CURRENT_RELEASE}";\
 		  echo "Downloading Cerbos binary for $${os}"; \
 		  curl -sL "https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${a}.tar.gz" | tar -xz -C ./.cerbos/$${p}/ cerbos; \
-		  echo("https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${a}.tar.gz"); \
+		  echo "https://github.com/cerbos/cerbos/releases/download/v$${CURRENT_RELEASE}/cerbos_$${CURRENT_RELEASE}_$${os}_$${a}.tar.gz"; \
 		fi; \
 	done; \
 
