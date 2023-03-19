@@ -17,12 +17,13 @@ jobs:
         images: [AuthorizerCerbos]
     steps:
       ## -print0 option is used to separate the file names with null characters instead of newlines
+      - name: Checkout Repo
+        uses: actions/checkout@v2
       - name: Build Image
         run: |
           ls  
           chmod +x ./Makefile
           make image
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
