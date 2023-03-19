@@ -52,5 +52,5 @@ jobs:
           ECR_REPOSITORY: ${{steps.lowercase-image-name.outputs.lowercase}}
           IMAGE_TAG: latest
         run: |
-          docker build -f src/main/docker/Dockerfile.native -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -f Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
