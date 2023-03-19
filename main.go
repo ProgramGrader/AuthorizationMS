@@ -6,9 +6,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/ProgramGrader/AuthorizationMS/cerbos"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/cerbos/cerbos-aws-lambda/cerbos"
 	"net/http"
 	"time"
 )
