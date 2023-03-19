@@ -1,4 +1,4 @@
-module github.com/cerbos/cerbos-aws-lambda
+module github.com/ProgramGrader/AuthorizationMS
 
 go 1.17
 
