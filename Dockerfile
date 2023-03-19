@@ -3,8 +3,8 @@ FROM golang:latest as build
 WORKDIR /src
 
 #COPY gateway ./gateway
+COPY cerbos ./cerbos
 COPY go.mod go.sum main.go ./
-
 
 RUN go get -d -v ./...
 RUN go build -ldflags '-s -w' -o /cerbos main.go
@@ -13,7 +13,7 @@ RUN chmod +x /cerbos
 # Now copy it into our base image.
 FROM gcr.io/distroless/base
 ARG ARCH=x86_64
-COPY --from=build /gw /
+COPY --from=build /cerbos /
 COPY .cerbos/Linux_${ARCH}/cerbos /
 COPY conf.default.yml /conf.yml
 
