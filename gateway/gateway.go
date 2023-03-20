@@ -62,7 +62,7 @@ func (g *Gateway) Invoke(ctx context.Context, payload []byte) ([]byte, error) {
 	if !g.Started() {
 		panic("cerbos process not started")
 	}
-	var evt events.APIGatewayProxyRequest
+	var evt events.APIGatewayV2HTTPRequest
 	if err := json.Unmarshal(payload, &evt); err != nil {
 		return []byte{}, err
 	}
