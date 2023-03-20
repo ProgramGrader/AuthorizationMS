@@ -3,12 +3,12 @@ FROM golang:latest as build
 WORKDIR /src
 
 #COPY gateway ./gateway
-COPY cerbos ./cerbos
+COPY gateway ./gateway
 COPY go.mod go.sum main.go ./
 
 RUN go get -d -v ./...
-RUN go build -ldflags '-s -w' -o /cerbos main.go
-RUN chmod +x /cerbos
+RUN go build -ldflags '-s -w' -o /gw main.go
+RUN chmod +x /gw
 
 # Now copy it into our base image.
 FROM gcr.io/distroless/base
@@ -20,6 +20,6 @@ COPY conf.default.yml /conf.yml
 # Uncomment for testing with a disk storage
 # define REMOTE_CERBOS_URL pointing to HTTP API (see CerbosServerFunctionAPI in sam.yml)
 # then run `make test`
-#COPY test/testdata/store /store
-#COPY test/testdata/conf.yml test/testdata/verify_key.jwk /
-ENTRYPOINT ["/cerbos"]
+COPY test/testdata/store /store
+COPY test/testdata/conf.yml test/testdata/verify_key.jwk /
+ENTRYPOINT ["/gw"]

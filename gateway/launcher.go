@@ -1,11 +1,10 @@
 // Copyright 2021 Zenauth Ltd.
 // SPDX-License-Identifier: Apache-2.0
 
-package cerbos
+package gateway
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -25,22 +24,20 @@ const (
 	cerbosHealthCheckIntervalDefault = 50 * time.Millisecond
 )
 
-var ErrNotStarted = errors.New("timeout exceeded starting Cerbos")
-
-type Launcher struct {
+type launcher struct {
 	httpClient     *http.Client
 	process        *os.Process
 	healthEndpoint string
 }
 
-func NewLauncher(httpClient *http.Client, healthEndpoint string) *Launcher {
-	return &Launcher{
+func newLauncher(httpClient *http.Client, healthEndpoint string) *launcher {
+	return &launcher{
 		httpClient:     httpClient,
 		healthEndpoint: healthEndpoint,
 	}
 }
 
-func (l *Launcher) StartProcess(ctx context.Context, cerbos, workDir, configFile string) (err error) {
+func (l *launcher) StartProcess(ctx context.Context, cerbos, workDir, configFile string) (err error) {
 	if l.Started() {
 		return nil
 	}
@@ -102,11 +99,11 @@ func parseDurationOrDefault(v string, d time.Duration) time.Duration {
 	return res
 }
 
-func (l *Launcher) Started() bool {
+func (l *launcher) Started() bool {
 	return l.process != nil
 }
 
-func (l *Launcher) StopProcess() error {
+func (l *launcher) StopProcess() error {
 	if l.process != nil {
 		err := l.process.Kill()
 		if err != nil {
