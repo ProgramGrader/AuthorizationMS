@@ -17,9 +17,10 @@ module "Deployer"{
   }
 
   environment = [{
-    BUCKET_URL: aws_s3_bucket.cerbosPolicyBucket.bucket_regional_domain_name
-    BUCKET_PREFIX: aws_s3_bucket.cerbosPolicyBucket.bucket_prefix
+    BUCKET_URL: data.aws_s3_bucket.csgraderPolicyBucket.bucket_regional_domain_name
+    BUCKET_PREFIX: ""
     CERBOS_LOG_LEVEL: "INFO"
+    REMOTE_CERBOS_URL: aws_apigatewayv2_stage.stage.invoke_url
   }]
 
 
@@ -28,6 +29,7 @@ module "Deployer"{
   region                          = "us-east-2"
 }
 
-resource "aws_s3_bucket" "cerbosPolicyBucket" {
-  bucket = "s3-cerbos-policy"
+data "aws_s3_bucket" "csgraderPolicyBucket" {
+  bucket = "csgrader-policy-bucket"
 }
+// how does cerbos parse the apigateway request to get the actual cerbos request
