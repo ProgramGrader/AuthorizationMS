@@ -10,3 +10,7 @@ auxData:
       - id: cerbos
         local: # Load from a local file
           file: verify_key.jwk
+server:
+  adminAPI:
+    enabled: true # username cerbos password cerbosAdmin
+  playgroundEnabled: true

@@ -13,3 +13,8 @@ storage:
     prefix: $BUCKET_PREFIX
     workDir: /tmp/workDir
     updatePollInterval: 15s
+
+server:
+  adminAPI:
+    enabled: true # username cerbos password cerbosAdmin
+  playgroundEnabled: true

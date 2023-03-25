@@ -2,9 +2,9 @@ FROM golang:latest as build
 
 WORKDIR /src
 
-#COPY gateway ./gateway
 COPY gateway ./gateway
 COPY go.mod go.sum main.go ./
+
 
 RUN go get -d -v ./...
 RUN go build -ldflags '-s -w' -o /gw main.go
