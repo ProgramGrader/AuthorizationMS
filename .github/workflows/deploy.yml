@@ -48,8 +48,10 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         env:
-          ECR_REPOSITORY_URL: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{steps.lowercase-image-name.outputs.lowercase}}
           IMAGE_TAG: latest
         run: |
-          make publish-image
+        #  docker build -f Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag  cerbos/aws-lambda-gateway:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
