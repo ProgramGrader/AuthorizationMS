@@ -1,80 +1,71 @@
-resource "aws_apigatewayv2_api" "api" {
-  name          = "AuthorizationMS"
-  protocol_type = "HTTP"
+#resource "aws_apigatewayv2_api" "api" {
+#  name          = "AuthorizationMS"
+#  protocol_type = "HTTP"
+#}
+
+module "authenticated_rest_api" {
+  source = "git::git@github.com:ProgramGrader/terraform-deploy-authenticated-api-gateway.git"
+  account_id= "048962136615"
+  api_gateway_name = "AuthorizationMS"
+  region = "us-east-2"
 }
 
+resource "aws_api_gateway_resource" "catch_all_resource" {
 
-// Defining permissions so that API gateway has permissions
-resource "aws_iam_role" "apigw-role" {
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "apigateway.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
+  parent_id   =  module.authenticated_rest_api.api_gateway_root_resource_id
+  path_part   = "{proxy+}"
+  rest_api_id = module.authenticated_rest_api.api_gateway_id
 }
 
-data "aws_lambda_function" "auth" {
-  function_name = "LambdaAuthorizer"
+resource "aws_api_gateway_method" "catch_all_method" {
+  authorization = "None"
+//  authorizer_id = module.authenticated_rest_api.authorizer_id
+  http_method   = "ANY"
+  resource_id   = aws_api_gateway_resource.catch_all_resource.id
+  rest_api_id   = module.authenticated_rest_api.api_gateway_id
+
+  request_parameters = {
+    "method.request.path.proxy" = true
+  }
 }
 
-data "aws_iam_role" "invocation_role" {
-  name = "gateway_auth_invocation"
+resource "aws_api_gateway_integration" "integrate_catch_all" {
+  depends_on = [module.Deployer["AuthorizerCerbos"]]
+  http_method = aws_api_gateway_method.catch_all_method.http_method
+  integration_http_method = "POST"
+  resource_id = aws_api_gateway_resource.catch_all_resource.id
+  rest_api_id = module.authenticated_rest_api.api_gateway_id
+  type        = "AWS_PROXY"
+  uri = module.Deployer.lambda_invoke_arn["AuthorizerCerbos"]
 }
 
-resource "aws_apigatewayv2_authorizer" "auth" {
-  api_id          =  aws_apigatewayv2_api.api.id
-  authorizer_type = "REQUEST"
-  identity_sources = ["$request.header.Authorization"]
-  authorizer_credentials_arn = data.aws_iam_role.invocation_role.arn
-  name            = data.aws_lambda_function.auth.function_name
-  authorizer_uri = data.aws_lambda_function.auth.invoke_arn
-  authorizer_payload_format_version = "1.0"
+resource "aws_api_gateway_deployment" "deploy" {
+  depends_on = [aws_api_gateway_integration.integrate_catch_all]
+  rest_api_id = module.authenticated_rest_api.api_gateway_id
+#
+#  lifecycle {
+#    create_before_destroy = true
+#  }
+
+  description = "Deployed endpoint at ${timestamp()}"
 }
 
-resource "aws_apigatewayv2_stage" "stage" {
-  api_id = aws_apigatewayv2_api.api.id
-  name   = "dev"
-  auto_deploy = true
-}
-
-resource "aws_apigatewayv2_integration" "api_integration" {
-  api_id             = aws_apigatewayv2_api.api.id
-  integration_type   = "AWS_PROXY"
-  integration_uri    =module.Deployer.lambda_invoke_arn["AuthorizerCerbos"]
-  integration_method = "POST"
-}
-
-resource "aws_apigatewayv2_route" "route" {
-  api_id    = aws_apigatewayv2_api.api.id
-  route_key = "ANY /{proxy+}" //var.api_route_key
-  authorization_type = "CUSTOM"
-  authorizer_id = aws_apigatewayv2_authorizer.auth.id
-  target = "integrations/${aws_apigatewayv2_integration.api_integration.id}"
-
-}
-
-
-resource "aws_apigatewayv2_deployment" "deployment" {
-  depends_on = [aws_apigatewayv2_route.route]
-  api_id      = aws_apigatewayv2_api.api.id
+resource "aws_api_gateway_stage" "default"{
+  deployment_id = aws_api_gateway_deployment.deploy.id
+  rest_api_id   = module.authenticated_rest_api.api_gateway_id
+  stage_name    = "dev"
+  xray_tracing_enabled = true
 }
 
 // adding permission to allow api gw to invoke the lambda
 resource "aws_lambda_permission" "allow_apigw_to_trigger_lambda" {
+  depends_on = [module.Deployer["AuthorizerCerbos"]]
   action        = "lambda:InvokeFunction"
   function_name = "AuthorizerCerbos"
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.api.execution_arn}/*/*"
-
+  source_arn    = "${module.authenticated_rest_api.api_gateway_execution_arn}/*/*/*"
 
 }
+
+
+
