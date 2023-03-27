@@ -62,7 +62,7 @@ func (g *Gateway) Invoke(ctx context.Context, payload []byte) ([]byte, error) {
 	if !g.Started() {
 		panic("cerbos process not started")
 	}
-	var evt events.APIGatewayProxyRequest
+	var evt events.APIGatewayV2HTTPRequest
 	if err := json.Unmarshal(payload, &evt); err != nil {
 		return []byte{}, err
 	}
@@ -82,7 +82,7 @@ func (g *Gateway) Invoke(ctx context.Context, payload []byte) ([]byte, error) {
 	res, err := MkGatewayResponse(resp)
 	if err != nil {
 		log.Print(err)
-		res = &events.APIGatewayProxyResponse{
+		res = &events.APIGatewayV2HTTPResponse{
 			StatusCode: http.StatusInternalServerError,
 			Body:       err.Error(),
 			Headers:    map[string]string{"content-type": "text/plain; charset=utf-8"},
@@ -92,20 +92,14 @@ func (g *Gateway) Invoke(ctx context.Context, payload []byte) ([]byte, error) {
 }
 
 // newRequest returns a new http.Request from the given Lambda event.
-func (g *Gateway) newRequest(ctx context.Context, e events.APIGatewayProxyRequest) (*http.Request, error) {
+func (g *Gateway) newRequest(ctx context.Context, e events.APIGatewayV2HTTPRequest) (*http.Request, error) {
 	// path
-	//u, err := url.Parse(e.RawPath)
-	//if err != nil {
-	//	return nil, fmt.Errorf("failed to parse RawPath %q: %w", e.RawPath, err)
-	//}
-	//
-	//u.RawQuery = e.RawQueryString
-
-	reqURI := fmt.Sprintf("%s?%s", e.Path, e.QueryStringParameters)
-	u, err := url.ParseRequestURI(reqURI)
+	u, err := url.Parse(e.RawPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse request URI %q: %w", reqURI, err)
+		return nil, fmt.Errorf("failed to parse RawPath %q: %w", e.RawPath, err)
 	}
+
+	u.RawQuery = e.RawQueryString
 
 	u.Scheme = g.cerbosAddress.Scheme
 	u.Host = g.cerbosAddress.Host
@@ -120,13 +114,13 @@ func (g *Gateway) newRequest(ctx context.Context, e events.APIGatewayProxyReques
 		body = string(b)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, e.RequestContext.HTTPMethod, u.String(), strings.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, e.RequestContext.HTTP.Method, u.String(), strings.NewReader(body))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create HTTP request: %w", err)
 	}
 
 	// remote addr
-	req.RemoteAddr = e.RequestContext.Identity.SourceIP //.HTTP.SourceIP
+	req.RemoteAddr = e.RequestContext.HTTP.SourceIP
 
 	// header fields
 	for k, values := range e.Headers {
@@ -134,9 +128,9 @@ func (g *Gateway) newRequest(ctx context.Context, e events.APIGatewayProxyReques
 			req.Header.Add(k, v)
 		}
 	}
-	//for _, c := range e.Cookies {
-	//	req.Header.Add("Cookie", c)
-	//}
+	for _, c := range e.Cookies {
+		req.Header.Add("Cookie", c)
+	}
 
 	// content-length
 	if req.Header.Get("Content-Length") == "" && body != "" {
@@ -158,8 +152,8 @@ func (g *Gateway) newRequest(ctx context.Context, e events.APIGatewayProxyReques
 	return req, nil
 }
 
-func MkGatewayResponse(hresp *http.Response) (res *events.APIGatewayProxyResponse, err error) {
-	res = new(events.APIGatewayProxyResponse)
+func MkGatewayResponse(hresp *http.Response) (res *events.APIGatewayV2HTTPResponse, err error) {
+	res = new(events.APIGatewayV2HTTPResponse)
 	res.Headers = make(map[string]string)
 
 	defer multierr.AppendInvoke(&err, multierr.Close(hresp.Body))
@@ -178,7 +172,7 @@ func MkGatewayResponse(hresp *http.Response) (res *events.APIGatewayProxyRespons
 		res.Headers[strings.ToLower(k)] = strings.Join(vv, ",")
 	}
 	// see https://aws.amazon.com/blogs/compute/simply-serverless-using-aws-lambda-to-expose-custom-cookies-with-api-gateway/
-	//res.Cookies = hresp.Header["Set-Cookie"]
+	res.Cookies = hresp.Header["Set-Cookie"]
 	res.StatusCode = hresp.StatusCode
 	return res, nil
 }

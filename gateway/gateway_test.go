@@ -80,7 +80,7 @@ func TestGateway_Invoke(t *testing.T) {
 			got, err := gw.Invoke(ctx, payload)
 			is.NoError(err)
 
-			var response events.APIGatewayProxyResponse
+			var response events.APIGatewayV2HTTPResponse
 			err = json.Unmarshal(got, &response)
 			is.NoError(err)
 			if tt.WantError {
@@ -157,9 +157,9 @@ func pathToCerbos(t *testing.T) string {
 }
 
 func mkPayload(input []byte, endpoint string) ([]byte, error) {
-	var request events.APIGatewayProxyRequest
-	request.Path = "http://example.com" + endpoint
-	request.RequestContext.HTTPMethod = "POST"
+	var request events.APIGatewayV2HTTPRequest
+	request.RawPath = "http://example.com" + endpoint
+	request.RequestContext.HTTP.Method = "POST"
 	request.Headers = map[string]string{
 		"content-type": "application/json",
 	}
