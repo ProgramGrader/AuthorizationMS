@@ -1,15 +1,35 @@
+#---
+#storage:
+#  driver: "disk"
+#  disk:
+#    directory: store
+#
+#auxData:
+#  jwt:
+#    keySets:
+#      - id: cerbos
+#        local: # Load from a local file
+#          file: verify_key.jwk
+#server:
+#  adminAPI:
+#    enabled: true # username cerbos password cerbosAdmin
+#  playgroundEnabled: true
 ---
-storage:
-  driver: "disk"
-  disk:
-    directory: store
-
+# https://docs.cerbos.dev/cerbos/latest/configuration/auxdata.html
+# WARNING: Disabling JWT verification is not recommended because it makes the system
+# insecure by forcing Cerbos to evaluate policies using potentially tampered data.
 auxData:
   jwt:
-    keySets:
-      - id: cerbos
-        local: # Load from a local file
-          file: verify_key.jwk
+    disableVerification: true
+
+storage:
+  driver: "blob"
+  blob:
+    bucket: $BUCKET_URL
+    prefix: $BUCKET_PREFIX
+    workDir: /tmp/workDir
+    updatePollInterval: 15s
+
 server:
   adminAPI:
     enabled: true # username cerbos password cerbosAdmin

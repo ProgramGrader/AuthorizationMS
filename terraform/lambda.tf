@@ -16,12 +16,12 @@ module "Deployer"{
     Version = "latest"
   }
 
-#  environment = [{
-#    BUCKET_URL: data.aws_s3_bucket.csgraderPolicyBucket.bucket_regional_domain_name
-#    BUCKET_PREFIX: ""
-#    CERBOS_LOG_LEVEL: "INFO"
-#    REMOTE_CERBOS_URL: aws_api_gateway_stage.default.invoke_url
-#  }]
+  environment = [{
+    BUCKET_URL: data.aws_s3_bucket.csgraderPolicyBucket.bucket_regional_domain_name
+    BUCKET_PREFIX: ""
+    CERBOS_LOG_LEVEL: "INFO"
+    REMOTE_CERBOS_URL: aws_apigatewayv2_stage.stage.invoke_url
+  }]
 
 
   lambda_file_name                = ["AuthorizerCerbos"]
