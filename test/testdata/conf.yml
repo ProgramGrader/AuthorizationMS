@@ -25,8 +25,8 @@ auxData:
 storage:
   driver: "blob"
   blob:
-    bucket: $BUCKET_URL
-    prefix: $BUCKET_PREFIX
+    bucket: "csgrader-policy-bucket.s3.us-east-2.amazonaws.com "# $BUCKET_URL
+    prefix: ""#$BUCKET_PREFIX
     workDir: /tmp/workDir
     updatePollInterval: 15s
 
