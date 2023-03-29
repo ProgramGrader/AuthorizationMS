@@ -1,6 +1,7 @@
 
 module "authenticated_api_gateway"{
-  source = "git::git@github.com:ProgramGrader/terraform-deploy-authenticated-api-gateway.git"
+  source  = "app.terraform.io/zacclifton/deploy-authenticated-api-gateway/aws"
+  version = "0.0.4"
   account_id = "048962136615"
   api_gateway_name  = "AuthorizationMS"
   region            = "us-east-2"

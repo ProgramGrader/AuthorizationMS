@@ -9,7 +9,8 @@
 #}
 #}
 module "Deployer"{
-  source = "git::git@github.com:ProgramGrader/terraform-aws-kotlin-image-deploy-lambda.git"
+  source  = "app.terraform.io/zacclifton/kotlin-image-deploy-lambda/aws"
+  version = "0.0.8"
   account_id                      = "048962136615"
   ecr_tags = {
     Type    = "lambda"
@@ -21,7 +22,8 @@ module "Deployer"{
     BUCKET_PREFIX: ""
     CERBOS_LOG_LEVEL: "INFO"
     REMOTE_CERBOS_URL: aws_apigatewayv2_stage.stage.invoke_url
-
+    AWS_ACCESS_KEY_ID: var.aws_access_key
+    AWS_SECRET_ACCESS_KEY: var.aws_secret_key
   }]
 
 
