@@ -35,4 +35,34 @@ module "Deployer"{
 data "aws_s3_bucket" "csgraderPolicyBucket" {
   bucket = "csgrader-policy-bucket"
 }
-// how does cerbos parse the apigateway request to get the actual cerbos request
+
+data "aws_iam_policy_document" "s3_permissions_lambda" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+      "s3:GetObject"
+    ]
+    resources = "*"
+  }
+}
+
+resource "aws_iam_policy" "s3_permissions_lambda" {
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetObject"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "s3_to_lambda_role" {
+  policy_arn = aws_iam_policy.s3_permissions_lambda.arn
+  role       = module.Deployer.lambda_role_name["AuthorizerCerbos"]
+}
