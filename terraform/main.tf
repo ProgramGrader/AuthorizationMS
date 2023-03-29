@@ -14,7 +14,7 @@ terraform {
       version = "~> 4.28"
     }
   }
-  backend "s3" { #when using
+  backend "s3" {
     bucket = "tfstate-3ea6z45i"
     key    = "AuthorizationMS/key"
     region = "us-east-2"
@@ -35,8 +35,6 @@ locals {
 provider "aws" {
   alias  = "primary"
   region = var.primary_aws_region
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
 
   default_tags {
     tags = local.shared_tags
