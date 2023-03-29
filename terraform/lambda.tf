@@ -36,17 +36,6 @@ data "aws_s3_bucket" "csgraderPolicyBucket" {
   bucket = "csgrader-policy-bucket"
 }
 
-data "aws_iam_policy_document" "s3_permissions_lambda" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "s3:ListBucket",
-      "s3:GetObject"
-    ]
-    resources = "*"
-  }
-}
-
 resource "aws_iam_policy" "s3_permissions_lambda" {
   policy = jsonencode({
     "Version": "2012-10-17",
