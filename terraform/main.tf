@@ -28,7 +28,7 @@ terraform {
 locals {
   shared_tags = {
     Terraform = "true"
-    Project = "AssignmentGradingMS"
+    Project = "AuthorizationMS/key"
   }
 }
 

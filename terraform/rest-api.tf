@@ -34,15 +34,6 @@ data "aws_iam_role" "invocation_role" {
   name = "gateway_auth_invocation"
 }
 
-#resource "aws_apigatewayv2_authorizer" "auth" {
-#  api_id          =  aws_apigatewayv2_api.api.id
-#  authorizer_type = "REQUEST"
-#  identity_sources = ["$request.header.Authorization"]
-#  authorizer_credentials_arn = data.aws_iam_role.invocation_role.arn
-#  name            = data.aws_lambda_function.auth.function_name
-#  authorizer_uri = data.aws_lambda_function.auth.invoke_arn
-#  authorizer_payload_format_version = "1.0"
-#}
 
 resource "aws_cloudwatch_log_group" "api_gateway_logs" {
   name = "/aws/apigateway/${module.authenticated_api_gateway.apigateway_name}"
@@ -105,7 +96,7 @@ data "aws_iam_policy_document" "api_gateway_logs" {
 
 
 resource "aws_apigatewayv2_stage" "stage" {
-  api_id = module.authenticated_api_gateway.apiv2_gateway_id
+  api_id = module.authenticated_api_gateway.api_gateway_id
   name   = "$default"
   default_route_settings {
     logging_level = "INFO"
@@ -122,7 +113,7 @@ resource "aws_apigatewayv2_stage" "stage" {
 }
 
 resource "aws_apigatewayv2_integration" "api_integration" {
-  api_id             = module.authenticated_api_gateway.apiv2_gateway_id
+  api_id             = module.authenticated_api_gateway.api_gateway_id
   integration_type   = "AWS_PROXY"
   integration_uri    =module.Deployer.lambda_invoke_arn["AuthorizerCerbos"]
   integration_method = "POST"
@@ -130,28 +121,21 @@ resource "aws_apigatewayv2_integration" "api_integration" {
 }
 
 resource "aws_apigatewayv2_route" "route" {
-  api_id    = module.authenticated_api_gateway.apiv2_gateway_id
+  api_id    = module.authenticated_api_gateway.api_gateway_id
   route_key = "ANY /{proxy+}" //var.api_route_key
   authorization_type = "CUSTOM"
-  authorizer_id = module.authenticated_api_gateway.v2authorizer_id
+  authorizer_id = module.authenticated_api_gateway.authorizer_id
   target = "integrations/${aws_apigatewayv2_integration.api_integration.id}"
 
 }
 
-
-
-
-#resource "aws_apigatewayv2_deployment" "deployment" {
-#  depends_on = [aws_apigatewayv2_route.route]
-#  api_id      = aws_apigatewayv2_api.api.id
-#}
 
 // adding permission to allow api gw to invoke the lambda
 resource "aws_lambda_permission" "allow_apigw_to_trigger_lambda" {
   action        = "lambda:InvokeFunction"
   function_name = "AuthorizerCerbos"
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${module.authenticated_api_gateway.apiv2_gateway_execution_arn}/*/*/*"
+  source_arn    = "${module.authenticated_api_gateway.api_gateway_execution_arn}/*/*/*"
 
 
 }

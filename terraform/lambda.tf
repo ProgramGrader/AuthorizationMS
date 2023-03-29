@@ -21,6 +21,7 @@ module "Deployer"{
     BUCKET_PREFIX: ""
     CERBOS_LOG_LEVEL: "INFO"
     REMOTE_CERBOS_URL: aws_apigatewayv2_stage.stage.invoke_url
+
   }]
 
 
