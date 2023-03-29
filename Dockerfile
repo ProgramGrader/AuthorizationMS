@@ -17,9 +17,4 @@ COPY --from=build /gw /
 COPY .cerbos/Linux_${ARCH}/cerbos /
 COPY conf.default.yml /conf.yml
 
-# Uncomment for testing with a disk storage
-# define REMOTE_CERBOS_URL pointing to HTTP API (see CerbosServerFunctionAPI in sam.yml)
-# then run `make test`
-COPY test/testdata/store /store
-COPY test/testdata/conf.yml test/testdata/verify_key.jwk /
 ENTRYPOINT ["/gw"]

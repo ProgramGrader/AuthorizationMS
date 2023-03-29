@@ -18,8 +18,8 @@ module "Deployer"{
   }
 
   environment = [{
-    BUCKET_URL: data.aws_s3_bucket.csgraderPolicyBucket.bucket_regional_domain_name
-    BUCKET_PREFIX: ""
+    BUCKET_URL: "s3://${data.aws_s3_bucket.csgraderPolicyBucket.id}?region=${data.aws_s3_bucket.csgraderPolicyBucket.region}"
+    BUCKET_PREFIX: "policies" #Look for policies only under this key prefix.
     CERBOS_LOG_LEVEL: "INFO"
     REMOTE_CERBOS_URL: aws_apigatewayv2_stage.stage.invoke_url
 #    AWS_ACCESS_KEY_ID: var.aws_access_key # These are reserved aws environment names and are not allowed to be overwritten
