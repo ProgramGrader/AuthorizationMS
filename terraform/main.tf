@@ -8,19 +8,27 @@
 
 terraform {
 
+  cloud{
+
+    organization = "zacclifton"
+    workspaces {
+        name = "AuthorizationMS-dev"
+    }
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 4.28"
     }
   }
-  backend "s3" {
-    bucket = "tfstate-3ea6z45i"
-    key    = "AuthorizationMS/key"
-    region = "us-east-2"
-    dynamodb_table = "app-state"
-    encrypt = true
-  }
+#  backend "s3" { #when using
+#    bucket = "tfstate-3ea6z45i"
+#    key    = "AuthorizationMS/key"
+#    region = "us-east-2"
+#    dynamodb_table = "app-state"
+#    encrypt = true
+#  }
   
 }
 
